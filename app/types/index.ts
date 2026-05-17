@@ -79,3 +79,31 @@ export interface StreamEvent {
   progress: number; // 0-100
   data?: AnalysisResult;
 }
+
+export interface ServiceHealth {
+  status: 'healthy' | 'degraded' | 'down';
+  responseTime: number; // milliseconds
+  message: string;
+  timestamp: string;
+  details?: {
+    provider?: string; // 'watsonx' | 'groq'
+    model?: string;
+    rateLimit?: {
+      remaining: number;
+      limit: number;
+      reset: string;
+    };
+    error?: string;
+  };
+}
+
+export interface HealthCheckResponse {
+  overall: 'healthy' | 'degraded' | 'down';
+  services: {
+    watsonx: ServiceHealth;
+    github: ServiceHealth;
+  };
+  timestamp: string;
+  version: string;
+  uptime: number; // process uptime in seconds
+}
