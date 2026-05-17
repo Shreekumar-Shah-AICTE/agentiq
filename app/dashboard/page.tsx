@@ -3,12 +3,14 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { ArrowLeft, Cpu, RefreshCw, Sparkles, BookOpen, AlertTriangle } from 'lucide-react';
+import { motion } from 'framer-motion';
 import ScoreGauge from '../components/ScoreGauge';
 import KPICards from '../components/KPICards';
 import DimensionBars from '../components/DimensionBars';
 import AnalysisStream from '../components/AnalysisStream';
 import FileViewer from '../components/FileViewer';
 import ExportPanel from '../components/ExportPanel';
+import Confetti from '../components/Confetti';
 import { AnalysisResult, StreamEvent } from '../types';
 
 function DashboardContent() {
@@ -90,8 +92,18 @@ function DashboardContent() {
     router.push('/');
   };
 
+  const sectionVariants = {
+    hidden: { opacity: 0, y: 24 },
+    visible: (i: number) => ({
+      opacity: 1, y: 0,
+      transition: { delay: i * 0.12, duration: 0.6, ease: [0.16, 1, 0.3, 1] as const }
+    })
+  };
+
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', paddingBottom: 'var(--space-12)' }}>
+      <Confetti active={!!result && !loading && !error} />
+      
       {/* NAVBAR */}
       <header className="navbar" style={{ padding: 'var(--space-3) 0', borderBottom: '1px solid var(--glass-border)' }}>
         <div className="container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -99,25 +111,11 @@ function DashboardContent() {
             <button 
               onClick={handleBack}
               style={{
-                background: 'transparent',
-                border: 'none',
-                color: 'var(--text-secondary)',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                padding: '6px',
-                borderRadius: '50%',
-                transition: 'all 0.2s ease'
+                background: 'transparent', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '6px', borderRadius: '50%', transition: 'all 0.2s ease'
               }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = 'var(--bg-elevated)';
-                e.currentTarget.style.color = 'white';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = 'transparent';
-                e.currentTarget.style.color = 'var(--text-secondary)';
-              }}
+              onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--bg-elevated)'; e.currentTarget.style.color = 'white'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; e.currentTarget.style.color = 'var(--text-secondary)'; }}
             >
               <ArrowLeft size={18} />
             </button>
@@ -133,12 +131,8 @@ function DashboardContent() {
             <div 
               className="glass mono" 
               style={{
-                padding: '6px 12px',
-                borderRadius: 'var(--radius-sm)',
-                fontSize: 'var(--text-xs)',
-                color: 'var(--cyan)',
-                border: '1px solid hsla(192, 100%, 55%, 0.25)',
-                backgroundColor: 'hsla(192, 100%, 55%, 0.05)'
+                padding: '6px 12px', borderRadius: 'var(--radius-sm)', fontSize: 'var(--text-xs)', color: 'var(--cyan)',
+                border: '1px solid hsla(192, 100%, 55%, 0.25)', backgroundColor: 'hsla(192, 100%, 55%, 0.05)'
               }}
             >
               repo: {repoUrl.replace('https://github.com/', '')}
@@ -152,15 +146,7 @@ function DashboardContent() {
         
         {/* Loading / Scanning stream overlay */}
         {loading && (
-          <div style={{
-            maxWidth: '640px',
-            width: '100%',
-            margin: 'var(--space-12) auto',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 'var(--space-5)',
-            alignItems: 'center'
-          }}>
+          <div style={{ maxWidth: '640px', width: '100%', margin: 'var(--space-12) auto', display: 'flex', flexDirection: 'column', gap: 'var(--space-5)', alignItems: 'center' }}>
             <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', gap: '6px' }}>
               <Sparkles size={32} color="var(--cyan)" className="animate-pulse" style={{ animation: 'pulseCyan 1.5s infinite', alignSelf: 'center', margin: '0 auto var(--space-2) auto' }} />
               <h2 style={{ fontSize: 'var(--text-xl)', fontWeight: 800, color: 'white' }}>
@@ -170,41 +156,21 @@ function DashboardContent() {
                 IBM Granite is auditing conventions and extracting PR discussions...
               </p>
             </div>
-            
             <AnalysisStream events={streamEvents} currentProgress={progress} />
           </div>
         )}
 
         {/* Error State */}
         {error && !loading && (
-          <div 
-            className="glass" 
-            style={{
-              maxWidth: '600px',
-              width: '100%',
-              margin: 'var(--space-12) auto',
-              padding: 'var(--space-6)',
-              borderLeft: '4px solid var(--danger)',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 'var(--space-3)'
-            }}
-          >
+          <div className="glass" style={{ maxWidth: '600px', width: '100%', margin: 'var(--space-12) auto', padding: 'var(--space-6)', borderLeft: '4px solid var(--danger)', display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--danger)' }}>
               <AlertTriangle size={24} />
               <h3 style={{ fontSize: 'var(--text-lg)', fontWeight: 700 }}>Codebase Audit Failed</h3>
             </div>
-            <p style={{ fontSize: 'var(--text-sm)', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
-              {error}
-            </p>
+            <p style={{ fontSize: 'var(--text-sm)', color: 'var(--text-secondary)', lineHeight: 1.5 }}>{error}</p>
             <div style={{ display: 'flex', gap: 'var(--space-3)', marginTop: 'var(--space-2)' }}>
-              <button onClick={handleBack} className="btn-secondary">
-                Go Back
-              </button>
-              <button onClick={startAnalysis} className="btn-primary">
-                <RefreshCw size={16} />
-                Try Again
-              </button>
+              <button onClick={handleBack} className="btn-secondary">Go Back</button>
+              <button onClick={startAnalysis} className="btn-primary"><RefreshCw size={16} /> Try Again</button>
             </div>
           </div>
         )}
@@ -214,108 +180,69 @@ function DashboardContent() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-6)' }}>
             
             {/* KPI Metrics Dashboard Row */}
-            <KPICards score={result.score} impact={result.impact} projectedScore={result.projectedScore} />
+            <motion.div variants={sectionVariants} initial="hidden" animate="visible" custom={0}>
+              <KPICards score={result.score} impact={result.impact} projectedScore={result.projectedScore} />
+            </motion.div>
 
             {/* Gauge dial and Dimension progress grid */}
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-              gap: 'var(--space-6)',
-              width: '100%'
-            }}>
-              {/* Left Circular Gauge */}
-              <div 
-                className="glass"
-                style={{
-                  padding: 'var(--space-6)',
-                  backgroundColor: 'var(--bg-surface)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center'
-                }}
-              >
-                <ScoreGauge score={result.score.overall} label="Current AgentIQ Score" />
+            <motion.div variants={sectionVariants} initial="hidden" animate="visible" custom={1}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 'var(--space-6)', width: '100%' }}>
+                {/* Left Circular Gauge */}
+                <div className="glass" style={{ padding: 'var(--space-6)', backgroundColor: 'var(--bg-surface)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <ScoreGauge score={result.score.overall} label="Current AgentIQ Score" />
+                </div>
+                {/* Right Horizontal bars breakdown */}
+                <div className="glass" style={{ padding: 'var(--space-6)', backgroundColor: 'var(--bg-surface)', display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
+                  <h3 style={{ fontSize: 'var(--text-base)', fontWeight: 700, color: 'white', borderBottom: '1px solid var(--glass-border)', paddingBottom: '8px' }}>
+                    Quantified Effectiveness Breakdown
+                  </h3>
+                  <DimensionBars score={result.score} />
+                </div>
               </div>
-
-              {/* Right Horizontal bars breakdown */}
-              <div 
-                className="glass"
-                style={{
-                  padding: 'var(--space-6)',
-                  backgroundColor: 'var(--bg-surface)',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: 'var(--space-4)'
-                }}
-              >
-                <h3 style={{ fontSize: 'var(--text-base)', fontWeight: 700, color: 'white', borderBottom: '1px solid var(--glass-border)', paddingBottom: '8px' }}>
-                  Quantified Effectiveness Breakdown
-                </h3>
-                <DimensionBars score={result.score} />
-              </div>
-            </div>
+            </motion.div>
 
             {/* Tribal Knowledge Board */}
-            <div 
-              className="glass"
-              style={{
-                padding: 'var(--space-5) var(--space-6)',
-                backgroundColor: 'var(--bg-surface)',
-                borderLeft: '3px solid var(--purple)'
-              }}
-            >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: 'var(--space-3)' }}>
-                <BookOpen size={20} color="var(--purple)" />
-                <h3 style={{ fontSize: 'var(--text-base)', fontWeight: 700, color: 'white' }}>
-                  Tribal Knowledge Rules Board (PR discussions analyzed)
-                </h3>
+            <motion.div variants={sectionVariants} initial="hidden" animate="visible" custom={2}>
+              <div className="glass" style={{ padding: 'var(--space-5) var(--space-6)', backgroundColor: 'var(--bg-surface)', borderLeft: '3px solid var(--purple)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: 'var(--space-3)' }}>
+                  <BookOpen size={20} color="var(--purple)" />
+                  <h3 style={{ fontSize: 'var(--text-base)', fontWeight: 700, color: 'white' }}>
+                    Tribal Knowledge Rules Board (PR discussions analyzed)
+                  </h3>
+                </div>
+                <ul style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 'var(--space-3)', paddingLeft: 0, listStyleType: 'none' }}>
+                  {result.tribalKnowledge.rules.map((rule, index) => (
+                    <li key={index} style={{ fontSize: 'var(--text-sm)', color: 'var(--text-secondary)', backgroundColor: 'var(--bg-elevated)', padding: 'var(--space-3) var(--space-4)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--glass-border)', lineHeight: 1.4 }}>
+                      <span style={{ color: 'var(--purple)', fontWeight: 700, marginRight: '6px' }}>#0{index + 1}</span>
+                      {rule}
+                    </li>
+                  ))}
+                </ul>
               </div>
-              <ul style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-                gap: 'var(--space-3)',
-                paddingLeft: 0,
-                listStyleType: 'none'
-              }}>
-                {result.tribalKnowledge.rules.map((rule, index) => (
-                  <li 
-                    key={index}
-                    style={{
-                      fontSize: 'var(--text-sm)',
-                      color: 'var(--text-secondary)',
-                      backgroundColor: 'var(--bg-elevated)',
-                      padding: 'var(--space-3) var(--space-4)',
-                      borderRadius: 'var(--radius-sm)',
-                      border: '1px solid var(--glass-border)',
-                      lineHeight: 1.4
-                    }}
-                  >
-                    <span style={{ color: 'var(--purple)', fontWeight: 700, marginRight: '6px' }}>#0{index + 1}</span>
-                    {rule}
-                  </li>
-                ))}
-              </ul>
-            </div>
+            </motion.div>
 
             {/* Multi-IDE file editor tabs */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <h3 style={{ fontSize: 'var(--text-lg)', fontWeight: 800, color: 'white' }}>
-                  Multi-IDE Alignment Context Blueprints
-                </h3>
-                <span style={{ fontSize: 'var(--text-xs)', color: 'var(--text-muted)' }}>
-                  Auto-optimized for Cursor, Copilot, CLAUDE, & Bob
-                </span>
+            <motion.div variants={sectionVariants} initial="hidden" animate="visible" custom={3}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <h3 style={{ fontSize: 'var(--text-lg)', fontWeight: 800, color: 'white' }}>
+                    Multi-IDE Alignment Context Blueprints
+                  </h3>
+                  <span style={{ fontSize: 'var(--text-xs)', color: 'var(--text-muted)' }}>
+                    Auto-optimized for Cursor, Copilot, CLAUDE, & Bob
+                  </span>
+                </div>
+                <FileViewer files={result.generatedFiles} repoName={result.repoMeta.name} />
               </div>
-              <FileViewer files={result.generatedFiles} repoName={result.repoMeta.name} />
-            </div>
+            </motion.div>
 
             {/* Bottom Export panel */}
-            <ExportPanel files={result.generatedFiles} repoName={result.repoMeta.name} onReRun={startAnalysis} />
+            <motion.div variants={sectionVariants} initial="hidden" animate="visible" custom={4}>
+              <ExportPanel files={result.generatedFiles} repoName={result.repoMeta.name} onReRun={startAnalysis} />
+            </motion.div>
 
           </div>
         )}
-
       </main>
     </div>
   );

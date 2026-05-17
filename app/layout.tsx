@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import ParticleField from "./components/ParticleField";
 
 export const metadata: Metadata = {
   title: "AgentIQ — AI Agent Effectiveness Platform",
@@ -14,8 +15,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <div className="page-bg" />
-        <div className="dot-grid" />
+        <ParticleField />
         {children}
       </body>
     </html>

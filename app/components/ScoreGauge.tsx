@@ -85,6 +85,23 @@ export default function ScoreGauge({ score, label, animate = true }: ScoreGaugeP
             strokeWidth={strokeWidth}
             strokeOpacity="0.25"
           />
+          {/* Neon Glow Ring */}
+          <circle
+            cx="100"
+            cy="110"
+            r={radius}
+            fill="transparent"
+            stroke={strokeColor}
+            strokeWidth={strokeWidth}
+            strokeDasharray={circumference}
+            strokeDashoffset={strokeDashoffset}
+            strokeLinecap="round"
+            style={{
+              transition: 'stroke-dashoffset 0.8s var(--ease-out-expo), stroke 0.5s ease',
+              filter: 'blur(8px)',
+              opacity: 0.35
+            }}
+          />
           {/* Main gauge ring */}
           <circle
             cx="100"
@@ -122,7 +139,8 @@ export default function ScoreGauge({ score, label, animate = true }: ScoreGaugeP
             background: 'var(--gradient-text)',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
-            backgroundClip: 'text'
+            backgroundClip: 'text',
+            animation: 'scoreGlow 2s infinite'
           }}>
             {displayScore}
           </span>
