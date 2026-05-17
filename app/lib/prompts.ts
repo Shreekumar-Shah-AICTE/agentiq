@@ -54,100 +54,144 @@ Output a single JSON array of rules. Do NOT wrap it in a markdown block, do NOT 
 
 Focus on: library preferences, architectural decisions, testing patterns, naming rules, forbidden patterns, deployment requirements. Output ONLY the JSON array.`;
 
-export const AGENTS_MD_PROMPT = `You are a technical context generator. Create the contents for an 'AGENTS.md' documentation file.
-AGENTS.md is a specialized file designed to onboard AI coding agents like Cursor, Github Copilot, and IBM Bob to this repository.
+export const AGENTS_MD_PROMPT = `You are a world-class technical writer creating an AGENTS.md file. This file is the SINGLE SOURCE OF TRUTH for any AI coding agent (Cursor, Copilot, Bob, Claude) working in this repository.
 
-Input Analysis JSON:
-{analysisJson}
+## Input Data
+Repository Analysis: {analysisJson}
+Tribal Knowledge: {tribalRules}
+Code Samples: {codeContext}
 
-Input Tribal Knowledge:
-{tribalRules}
+## Requirements — Your output MUST include ALL of these sections:
 
-Output the AGENTS.md content in clean markdown format. Do not wrap in a general code block, write the markdown directly. Address these sections in depth:
-- Project Overview & Tech Stack
-- Architectural Design & Key Relationships
-- Specific Naming Conventions & File Organization Rules (with concrete examples)
-- Build, Test, and Dev Commands
-- Code Patterns & Best Practices (Error Handling, Data Access, Async flows)
-- Anti-Patterns (What NOT to do in this codebase)
-- Tribal Knowledge (Unwritten rules discovered from review history)
-Provide a detailed, professional, and exhaustive file.`;
+### 1. Project Identity
+- Repository name, description, primary language, framework
+- Who maintains it and what it does (infer from code)
 
-export const BOB_MODE_PROMPT = `You are a system administrator. Create a custom YAML mode file for IBM Bob IDE.
-Slug: agentiq-optimized
-Name: "AgentIQ-Optimized Developer"
+### 2. Tech Stack (exhaustive)
+List every framework, library, and tool detected. Format as a table.
 
-Input Analysis JSON:
-{analysisJson}
+### 3. Architecture Deep Dive
+- Pattern name (MVC, layered, modular, etc.)
+- Module relationship descriptions
+- Data flow explanation
 
-Input Tribal Knowledge:
-{tribalRules}
+### 4. Naming Convention Bible
+For EACH entity type (variables, functions, components, files, CSS classes, constants, database fields), specify:
+- The exact pattern (camelCase, PascalCase, etc.)
+- 2-3 REAL examples pulled from this codebase
+- An explicit "DO NOT" anti-pattern example
 
-Output a clean, valid YAML file. Do not wrap in markdown code blocks. Follow this exact format:
+### 5. File Organization Rules
+- Directory-by-directory guide
+- Where new files of each type should go
+- Import path conventions (@/ aliases, relative, etc.)
+
+### 6. Build, Test, and Development Commands
+- Exact commands (no guessing)
+- Environment setup requirements
+
+### 7. Code Patterns & Error Handling
+- How errors are handled (custom classes? try-catch? error boundaries?)
+- How data is fetched (REST? GraphQL? Server Components?)
+- How state is managed
+- Async patterns (await style, Promise chains, etc.)
+
+### 8. Anti-Pattern Catalog
+For each dimension, show a DO vs DON'T comparison with code snippets.
+
+### 9. Tribal Knowledge (from PR history)
+- List each rule with context on WHY it exists
+
+### 10. AI Agent Quick Reference Card
+A compact 10-line cheat sheet of the most critical rules.
+
+Output the complete AGENTS.md in clean markdown. Be exhaustive and specific. NEVER use placeholder text.`;
+
+export const BOB_MODE_PROMPT = `Create a highly detailed custom IBM Bob mode YAML file. This mode will make Bob behave as a senior developer who deeply understands this specific codebase.
+
+## Input Data
+Repository Analysis: {analysisJson}
+Tribal Knowledge: {tribalRules}
+Code Samples: {codeContext}
+
+Output a valid YAML file (no markdown fences) with this structure:
+
 slug: agentiq-optimized
 name: "AgentIQ-Optimized Developer"
 roleDefinition: >
-  You are a senior developer on the project. You specialize in following naming patterns and unwritten rules.
+  You are a principal engineer on {project_name}. You have deep knowledge of every naming convention,
+  architectural boundary, and unwritten team rule. You refuse to generate code that violates project patterns.
 customInstructions: |
-  ## Core Architecture
-  [Detailed description based on patterns]
+  ## Architecture
+  [Detailed architecture with module boundaries — be specific, not generic]
   
-  ## Code Styling Rules
-  [Details]
-
-  ## Required Commands
-  - Build: [build_command]
-  - Test: [test_command]
-
-  ## Unwritten Tribal Rules
-  [Rules list]
-
-  ## Anti-Patterns
-  [Anti-patterns list]
+  ## Naming Rules (STRICT)
+  [For each entity type: the pattern + 2 real examples from this codebase]
+  
+  ## File Placement Rules
+  [Where new components, hooks, utils, API routes, and tests go]
+  
+  ## Import Conventions
+  [Absolute vs relative, alias usage, barrel exports]
+  
+  ## Build & Development
+  [Exact commands]
+  
+  ## Error Handling Contract
+  [How to handle errors in this project specifically]
+  
+  ## DO NOT (Anti-Patterns)
+  [List of forbidden patterns with brief explanations]
+  
+  ## Tribal Knowledge
+  [Unwritten rules from PR history]
 groups:
   - read
   - edit
-  - command`;
+  - command
 
-export const CURSORRULES_PROMPT = `Create a '.cursorrules' configuration file for AI agents in Cursor.
-The file should contain concrete, actionable guidelines on how to write code, design files, and run commands in this codebase.
+Make the customInstructions section extremely detailed — at least 40 lines.`;
 
-Input Analysis JSON:
-{analysisJson}
+export const CURSORRULES_PROMPT = `Create a '.cursorrules' configuration file for AI agents in Cursor. The file should contain concrete, actionable guidelines on how to write code, design files, and run commands in this codebase.
 
-Input Tribal Knowledge:
-{tribalRules}
+## Input Data
+Repository Analysis: {analysisJson}
+Tribal Knowledge: {tribalRules}
+Code Samples: {codeContext}
 
-Output the flat text containing markdown rules. Do not wrap in code blocks. Ensure the rules are highly technical and specify:
+Ensure the rules are highly technical, specific to Cursor's agent features (like tab completion, chat context, and command execution), and specify:
 - Tech Stack details
-- Naming conventions for variables, files, and classes
-- Folder-by-folder guidelines
-- Linting, build, and test requirements
-- Team preferences and unwritten rules`;
+- Strict casing rules for all variables, files, components, and databases with concrete code examples from this repository
+- Folder-by-folder layout maps
+- Build, lint, and test scripts
+- Anti-patterns catalog (DO vs DON'T comparisons with code snippets)
+- Cursor agent specific tips (e.g. 'Use exact type imports', 'Prioritize server components over clients')
 
-export const CLAUDE_MD_PROMPT = `Create a 'CLAUDE.md' configuration file. CLAUDE.md is used by AI assistants (like Claude Engineer or Anthropic's CLAUDE.md spec) to quickly learn build, test, and style commands for a repository.
+Output the flat text containing markdown rules directly. Do not wrap in code blocks.`;
 
-Input Analysis JSON:
-{analysisJson}
+export const CLAUDE_MD_PROMPT = `Create a 'CLAUDE.md' configuration file. CLAUDE.md is used by AI assistants like Claude Engineer to quickly learn build, test, and style commands for a repository.
 
-Input Tribal Knowledge:
-{tribalRules}
+## Input Data
+Repository Analysis: {analysisJson}
+Tribal Knowledge: {tribalRules}
+Code Samples: {codeContext}
 
-Output the CLAUDE.md content in direct markdown format. Ensure it contains:
-1. Build, test, and run commands (explicitly list how to run linting, formatting, testing, and production builds)
-2. Precise code style guidelines (indents, brackets, typing, imports, component patterns, error handling)
-Make it concise, precise, and easily readable.`;
+Output the CLAUDE.md content in direct, concise markdown format. Ensure it contains:
+1. Build, test, and run commands as the VERY FIRST section (including linting, formatting, testing, and production builds)
+2. Precise codebase guidelines (naming casings, imports, component patterns, error handling, state) with concrete codebase examples
+3. Anti-patterns catalog (explicit DO vs DON'T code blocks)
 
-export const COPILOT_INSTRUCTIONS_PROMPT = `Create a '.github/copilot-instructions.md' instruction file for Github Copilot.
-This file influences Copilot's suggestions across the entire repository.
+Keep it terse, dense, and command-focused. Do not wrap in code blocks.`;
 
-Input Analysis JSON:
-{analysisJson}
+export const COPILOT_INSTRUCTIONS_PROMPT = `Create a '.github/copilot-instructions.md' instruction file for Github Copilot. This file influences Copilot's suggestions and inline completions across the entire repository.
 
-Input Tribal Knowledge:
-{tribalRules}
+## Input Data
+Repository Analysis: {analysisJson}
+Tribal Knowledge: {tribalRules}
+Code Samples: {codeContext}
 
-Output the markdown contents directly. Make it clear and structured. Specify the tech stack, library choices, architecture, naming constraints, and unwritten team rules.`;
+Output the markdown contents directly. Make it clear and structured. Specify the tech stack, library choices, architecture, naming constraints with concrete codebase examples, and unwritten team rules.
+Provide explicit examples of standard imports, error handling blocks, and unit test structures. Avoid conversational text.`;
 
 export const DEPENDENCY_ANALYSIS_PROMPT = `You are a senior software security auditor. Analyze this package.json (or requirements.txt / Cargo.toml) dependency list.
 

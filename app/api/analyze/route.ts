@@ -98,7 +98,7 @@ export async function GET(req: NextRequest) {
         // Step 7: Generate recommendations + architecture diagram + context files (parallel)
         send({ phase: 'generating', message: 'Synthesizing intelligence reports and context blueprints...', progress: 85 });
         const [generatedFiles, recommendations, architectureDiagram] = await Promise.all([
-          generateContextFiles(analysis, tribalKnowledgeRules, repoMeta),
+          generateContextFiles(analysis, tribalKnowledgeRules, repoMeta, keyFiles, fileTree),
           generateRecommendations(analysis, tribalKnowledgeRules),
           generateArchitectureDiagram(analysis)
         ]);
