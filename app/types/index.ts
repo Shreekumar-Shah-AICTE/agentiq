@@ -43,6 +43,23 @@ export interface GeneratedFiles {
   copilotInstructions: string;
 }
 
+export interface DependencyInfo {
+  name: string;
+  version: string;
+  type: 'production' | 'dev';
+  risk: 'safe' | 'outdated' | 'heavy' | 'deprecated';
+  note?: string; // e.g. "Consider replacing with date-fns"
+}
+
+export interface Recommendation {
+  id: string;
+  title: string;
+  dimension: 'conventions' | 'architecture' | 'patterns' | 'buildDeploy' | 'documentation';
+  impact: 'critical' | 'high' | 'medium' | 'low';
+  description: string;
+  action: string; // Exact actionable instruction
+}
+
 export interface AnalysisResult {
   repoMeta: RepoMeta;
   score: ScoreBreakdown;
@@ -51,10 +68,13 @@ export interface AnalysisResult {
   generatedFiles: GeneratedFiles;
   projectedScore: number; // Score AFTER applying generated context
   analysisTimestamp: string;
+  dependencies: DependencyInfo[];
+  recommendations: Recommendation[];
+  architectureDiagram: string; // Mermaid markup string
 }
 
 export interface StreamEvent {
-  phase: 'fetching' | 'scanning' | 'analyzing' | 'tribal' | 'scoring' | 'generating' | 'complete' | 'error';
+  phase: 'fetching' | 'scanning' | 'analyzing' | 'tribal' | 'dependencies' | 'scoring' | 'generating' | 'complete' | 'error';
   message: string;
   progress: number; // 0-100
   data?: AnalysisResult;

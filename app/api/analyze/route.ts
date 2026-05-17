@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
 import { parseGitHubUrl, fetchRepoMeta, fetchFileTree, detectKeyFiles, fetchKeyFiles } from '../../lib/github';
-import { analyzeWithGranite, extractTribalKnowledge } from '../../lib/analyzer';
+import { analyzeWithGranite, extractTribalKnowledge, analyzeDependencies, generateRecommendations, generateArchitectureDiagram } from '../../lib/analyzer';
 import { generateContextFiles } from '../../lib/generator';
 import { RepoMeta, ScoreBreakdown, BusinessImpact, AnalysisResult, StreamEvent } from '../../types';
 
@@ -50,6 +50,10 @@ export async function GET(req: NextRequest) {
         send({ phase: 'tribal', message: 'Retrieving unwritten team decisions from PR discussion board...', progress: 60 });
         const tribalKnowledgeRules = await extractTribalKnowledge(owner, name);
 
+        // Step 5.5: Dependency analysis
+        send({ phase: 'dependencies', message: 'Auditing dependency health and security posture...', progress: 68 });
+        const dependencies = await analyzeDependencies(keyFiles);
+
         // Step 6: Compute Scores & Business ROI
         send({ phase: 'scoring', message: 'Quantifying developer context coverage index...', progress: 75 });
         
@@ -91,9 +95,13 @@ export async function GET(req: NextRequest) {
         // Projected score after context applying is high (usually 85-95)
         const projectedScore = Math.min(98, Math.max(88, scoreBreakdown.overall + 45));
 
-        // Step 7: Generate context files
-        send({ phase: 'generating', message: 'Synthesizing context synchronization blueprints (AGENTS.md, .bob/modes)...', progress: 85 });
-        const generatedFiles = await generateContextFiles(analysis, tribalKnowledgeRules, repoMeta);
+        // Step 7: Generate recommendations + architecture diagram + context files (parallel)
+        send({ phase: 'generating', message: 'Synthesizing intelligence reports and context blueprints...', progress: 85 });
+        const [generatedFiles, recommendations, architectureDiagram] = await Promise.all([
+          generateContextFiles(analysis, tribalKnowledgeRules, repoMeta),
+          generateRecommendations(analysis, tribalKnowledgeRules),
+          generateArchitectureDiagram(analysis)
+        ]);
 
         // Assemble Final Result
         const finalResult: AnalysisResult = {
@@ -107,7 +115,10 @@ export async function GET(req: NextRequest) {
           },
           generatedFiles,
           projectedScore,
-          analysisTimestamp: new Date().toISOString()
+          analysisTimestamp: new Date().toISOString(),
+          dependencies,
+          recommendations,
+          architectureDiagram
         };
 
         // Send completion

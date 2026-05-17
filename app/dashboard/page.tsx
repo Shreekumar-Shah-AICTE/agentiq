@@ -11,6 +11,9 @@ import AnalysisStream from '../components/AnalysisStream';
 import FileViewer from '../components/FileViewer';
 import ExportPanel from '../components/ExportPanel';
 import Confetti from '../components/Confetti';
+import DependencyPanel from '../components/DependencyPanel';
+import ArchDiagram from '../components/ArchDiagram';
+import RecommendationsPanel from '../components/RecommendationsPanel';
 import { AnalysisResult, StreamEvent } from '../types';
 
 function DashboardContent() {
@@ -221,8 +224,29 @@ function DashboardContent() {
               </div>
             </motion.div>
 
+            {/* Dependency Intelligence */}
+            {result.dependencies && result.dependencies.length > 0 && (
+              <motion.div variants={sectionVariants} initial="hidden" animate="visible" custom={3}>
+                <DependencyPanel dependencies={result.dependencies} />
+              </motion.div>
+            )}
+
+            {/* Architecture Blueprint */}
+            {result.architectureDiagram && (
+              <motion.div variants={sectionVariants} initial="hidden" animate="visible" custom={4}>
+                <ArchDiagram diagram={result.architectureDiagram} />
+              </motion.div>
+            )}
+
+            {/* Actionable Recommendations */}
+            {result.recommendations && result.recommendations.length > 0 && (
+              <motion.div variants={sectionVariants} initial="hidden" animate="visible" custom={5}>
+                <RecommendationsPanel recommendations={result.recommendations} />
+              </motion.div>
+            )}
+
             {/* Multi-IDE file editor tabs */}
-            <motion.div variants={sectionVariants} initial="hidden" animate="visible" custom={3}>
+            <motion.div variants={sectionVariants} initial="hidden" animate="visible" custom={6}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <h3 style={{ fontSize: 'var(--text-lg)', fontWeight: 800, color: 'white' }}>
@@ -237,7 +261,7 @@ function DashboardContent() {
             </motion.div>
 
             {/* Bottom Export panel */}
-            <motion.div variants={sectionVariants} initial="hidden" animate="visible" custom={4}>
+            <motion.div variants={sectionVariants} initial="hidden" animate="visible" custom={7}>
               <ExportPanel files={result.generatedFiles} repoName={result.repoMeta.name} onReRun={startAnalysis} />
             </motion.div>
 

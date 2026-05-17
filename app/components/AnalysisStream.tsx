@@ -15,6 +15,7 @@ export default function AnalysisStream({ events, currentProgress }: AnalysisStre
     { key: 'scanning', label: 'Codebase Scanning & Blob Mapping' },
     { key: 'analyzing', label: 'Granite Syntax & Convention Analysis' },
     { key: 'tribal', label: 'Tribal Knowledge PR Extraction' },
+    { key: 'dependencies', label: 'Dependency Health & Security Audit' },
     { key: 'scoring', label: 'Quantifying Coverage Score Indexes' },
     { key: 'generating', label: 'Context File Synthesis' }
   ];

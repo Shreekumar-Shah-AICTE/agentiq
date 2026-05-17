@@ -148,3 +148,82 @@ Input Tribal Knowledge:
 {tribalRules}
 
 Output the markdown contents directly. Make it clear and structured. Specify the tech stack, library choices, architecture, naming constraints, and unwritten team rules.`;
+
+export const DEPENDENCY_ANALYSIS_PROMPT = `You are a senior software security auditor. Analyze this package.json (or requirements.txt / Cargo.toml) dependency list.
+
+For EACH dependency, output a JSON array with this structure:
+[
+  {
+    "name": "react",
+    "version": "18.2.0",
+    "type": "production",
+    "risk": "safe",
+    "note": ""
+  },
+  {
+    "name": "moment",
+    "version": "2.29.4",
+    "type": "production",
+    "risk": "heavy",
+    "note": "Legacy library. Replace with date-fns or dayjs for 70% smaller bundle."
+  }
+]
+
+Risk levels:
+- "safe" — Actively maintained, no known issues
+- "outdated" — Major version behind or maintenance slowing
+- "heavy" — Unnecessarily large bundle impact, lighter alternatives exist  
+- "deprecated" — Officially deprecated or abandoned
+
+Be specific and technical in notes. Output ONLY the JSON array.`;
+
+export const RECOMMENDATIONS_PROMPT = `You are a principal software engineer conducting a code quality audit. Based on this analysis, generate a prioritized list of actionable recommendations.
+
+Input Analysis:
+{analysisJson}
+
+Input Tribal Knowledge:
+{tribalRules}
+
+Output a JSON array of recommendations sorted by impact (critical first):
+[
+  {
+    "id": "rec-1",
+    "title": "Add ESLint configuration with project-specific rules",
+    "dimension": "conventions",
+    "impact": "critical",
+    "description": "No linting configuration detected. This means AI agents have zero guidance on code style, leading to inconsistent completions that require manual correction.",
+    "action": "Create .eslintrc.json with rules for import ordering, naming conventions, and React hooks. Add lint script to package.json."
+  }
+]
+
+Generate 6-10 recommendations. Each must be:
+- Specific to THIS codebase (not generic advice)
+- Actionable with a clear next step
+- Tied to a specific dimension
+Output ONLY the JSON array.`;
+
+export const ARCHITECTURE_DIAGRAM_PROMPT = `Based on this codebase analysis, generate a Mermaid.js flowchart diagram showing the architecture.
+
+Input Analysis:
+{analysisJson}
+
+Output ONLY a valid Mermaid diagram string (flowchart TD format). Show:
+- Key modules/directories as nodes
+- Dependencies between them as arrows
+- Group related modules in subgraphs
+- Use descriptive labels
+
+Example format:
+flowchart TD
+  subgraph Frontend
+    A[pages/] --> B[components/]
+    B --> C[hooks/]
+  end
+  subgraph Backend
+    D[api/routes/] --> E[services/]
+    E --> F[database/]
+  end
+  A --> D
+
+Keep it clean — max 15-20 nodes. Output ONLY the mermaid code, no markdown fences.`;
