@@ -21,6 +21,10 @@
 <img src="https://img.shields.io/badge/PRs-Welcome-a855f7?style=flat-square" alt="PRs" />
 <img src="https://img.shields.io/github/stars/Shreekumar-Shah-AICTE/agentiq?style=flat-square&color=f59e0b" alt="Stars" />
 
+<br /><br />
+
+### [👉 Try the Live Demo 👈](https://agentiq-pink.vercel.app)
+
 </div>
 
 <br />
@@ -538,6 +542,18 @@ agentiq/
 ## 📄 License
 
 MIT License — see [LICENSE](LICENSE) for details.
+
+<br />
+
+---
+
+<br />
+
+## 🔗 Links
+
+- **Live Demo:** [agentiq-pink.vercel.app](https://agentiq-pink.vercel.app)
+- **GitHub Repository:** [github.com/Shreekumar-Shah-AICTE/agentiq](https://github.com/Shreekumar-Shah-AICTE/agentiq)
+- **IBM Granite:** [ibm.com/granite](https://ibm.com/granite)
 
 <br />
 
